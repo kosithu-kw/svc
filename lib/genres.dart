@@ -185,6 +185,9 @@ class _GDataState extends State<GData> {
                                                             return Row(
                                                               children: [
                                                                 Container(
+                                                                  decoration: BoxDecoration(
+                                                                    borderRadius: BorderRadius.circular(20),
+                                                                  ),
                                                                   width: 160,
                                                                   child: Card(
                                                                     child: InkWell(
@@ -194,7 +197,7 @@ class _GDataState extends State<GData> {
                                                                       },
                                                                       child: Container(
                                                                           decoration: BoxDecoration(
-                                                                              color: Colors.black
+                                                                              color: Colors.black,
                                                                           ),
                                                                           child: Container(
                                                                             child: Stack(

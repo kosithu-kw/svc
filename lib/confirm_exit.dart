@@ -31,7 +31,14 @@ class AppExit extends StatelessWidget {
                     children: [
                       Container(
                         child: TextButton(
-                          child: Text("QUICK",style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.exit_to_app, color: Colors.white, size: 17,),
+                              SizedBox(height: 5,),
+                              Text("QUICK",style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                            ],
+                          ),
                           onPressed: (){
                             exit(0);
                           },
@@ -39,7 +46,14 @@ class AppExit extends StatelessWidget {
                       ),
                       Container(
                         child: TextButton(
-                          child: Text("CONTINUED", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.video_collection_sharp, color: Colors.white, size: 17,),
+                              SizedBox(height: 5,),
+                              Text("CONTINUED", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
+                            ],
+                          ),
                           onPressed: (){
                             Navigator.push(context, MaterialPageRoute(builder: (context)=>Home()));
                           },

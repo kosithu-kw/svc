@@ -41,7 +41,7 @@ class _AuthState extends State<Auth> {
         _isLogin=true;
         _picture=currentUser.photoURL;
       });
-      Navigator.push(context, MaterialPageRoute(builder: (context)=>Auth()));
+      Navigator.push(context, MaterialPageRoute(builder: (context)=>super.widget));
     }
   }
 

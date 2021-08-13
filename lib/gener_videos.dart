@@ -88,6 +88,7 @@ class _GenerVideosState extends State<GenerVideos> {
           child: Stack(
             children: [
               Container(
+
                 decoration: _isBannerAdReady ? BoxDecoration(
                     border: Border(
                         top: BorderSide(

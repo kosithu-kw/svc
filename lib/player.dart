@@ -11,6 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:svc/drawer.dart';
+import 'package:svc/genres.dart';
 import 'package:svc/home.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flick_video_player/flick_video_player.dart';
@@ -57,6 +58,7 @@ class _PlayerState extends State<Player> {
   void initState() {
     SystemChrome.setEnabledSystemUIOverlays(
         [SystemUiOverlay.bottom, SystemUiOverlay.top]);
+
     _checkLogin();
     setState(() {
       _isVideoReady=true;
@@ -76,15 +78,16 @@ class _PlayerState extends State<Player> {
     super.initState();
   }
 
-  late VideoPlayerController _videoController =VideoPlayerController.network(_url);
+  late VideoPlayerController _videoController;
+  late Future<void> _initializeVideoPlayerFuture;
+
 
   _getVideo(){
-    flickManager = FlickManager(
-          videoPlayerController:
-          _videoController
-    );
+     _videoController=VideoPlayerController.network(_url);
+     _initializeVideoPlayerFuture = _videoController.initialize();
 
   }
+
 
 
   bool _isFavorite=false;
@@ -145,7 +148,8 @@ class _PlayerState extends State<Player> {
         setState(() {
           _showInterDownload=true;
         });
-      }else if(data['show_inter_nav']){
+      }
+      if(data['show_inter_nav']){
         setState(() {
           _showInterNav=true;
         });
@@ -171,7 +175,7 @@ class _PlayerState extends State<Player> {
             onAdDismissedFullScreenContent: (ad) {
 
               if(!_downloadAds){
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>Home(data: _indexForAds)));
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>Home()));
 
               }else{
                 ad.dispose();
@@ -179,7 +183,6 @@ class _PlayerState extends State<Player> {
                 downloadFile();
                 setState(() {
                   _downloadAds=false;
-                  _isInterstitialAdReady=false;
                   _videoController.play();
                 });
 
@@ -198,6 +201,8 @@ class _PlayerState extends State<Player> {
       ),
     );
   }
+
+
 
   bool _downloadAds=false;
   bool downloading=false;
@@ -260,27 +265,15 @@ class _PlayerState extends State<Player> {
 
   @override
   void dispose() {
-    flickManager.dispose();
+    _videoController.dispose();
     _interstitialAd?.dispose();
 
     super.dispose();
   }
 
-  int _indexForAds=0;
 
-  void onTabTapped(int index) {
-    flickManager.dispose();
-    if(_isInterstitialAdReady==true && _showInterNav==true){
-      setState(() {
-        _indexForAds=index;
-      });
-      _interstitialAd?.show();
-    }else{
-      Navigator.push(context, MaterialPageRoute(builder: (context)=>Home(data: index)));
 
-    }
-  }
-  int _currentIndex = 0;
+  bool _showAppBar=true;
 
   @override
   Widget build(BuildContext context) {
@@ -291,12 +284,18 @@ class _PlayerState extends State<Player> {
         splashColor: Colors.amber[900],
       ),
       title: _genre,
-      home: Scaffold(
-        key: _scaffoldKey,
-        appBar: AppBar(
-          centerTitle: false,
-          title: Text(_genre, style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),),
-          /*
+      home: WillPopScope(
+        onWillPop: ()async{
+          _videoController.dispose();
+          return await Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(builder: (context)=> Genres()));
+
+        },
+        child: Scaffold(
+          key: _scaffoldKey,
+          appBar: _showAppBar ? AppBar(
+            centerTitle: false,
+            title: Text(_genre, style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),),
+            /*
           actions: [
             IconButton(
                 onPressed: (){
@@ -309,51 +308,79 @@ class _PlayerState extends State<Player> {
 
            */
 
-        ),
-        drawer: SDrawer(),
-        /*
-        floatingActionButton: FloatingActionButton(
-          backgroundColor: Color(0x204665).withOpacity(1.0),
-          onPressed: (){
-            flickManager.dispose();
-            Navigator.push(context, MaterialPageRoute(builder: (context)=>Home()));
-          },
-          child: Icon(Icons.home),
-        ),
+          ): null,
+          drawer: SDrawer(),
 
-         */
-        body: SafeArea(
-          child: Stack(
-            children: [
-              Container(
-                child: Column(
-                  children: [
-                    Container(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Color(0x204665).withOpacity(1.0)
-                        ),
-                        child: Column(
-                          children: [
-                            Container(
-                                child: FlickVideoPlayer(
-                                  flickManager: flickManager ,
-                                )
+          floatingActionButton: FloatingActionButton(
+            backgroundColor: Color(0x204665).withOpacity(1.0),
+            onPressed: (){
+              _videoController.pause();
+              if(_isInterstitialAdReady==true && _showInterNav==true){
+                _interstitialAd?.show();
+              }else{
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>Home()));
+              }
+            },
+            child: Icon(Icons.home),
+          ),
+
+
+          body: SafeArea(
+            child: Stack(
+              children: [
+                Container(
+
+                    child: Column(
+                      children: [
+                        Container(
+
+                          child: Container(
+                            decoration: BoxDecoration(
+                                color: Color(0x204665).withOpacity(1.0)
                             ),
-                            Container(
-                              margin:EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 10),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Expanded(
-                                      child: Container(
-                                        child: Text("${_title}", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),),
-                                      )
+                            child: Column(
+                              children: [
+                                FutureBuilder(
+                                  future: _initializeVideoPlayerFuture,
+                                  builder: (context, snapshot) {
+                                    if (snapshot.connectionState == ConnectionState.done) {
+                                      // If the VideoPlayerController has finished initialization, use
+                                      // the data it provides to limit the aspect ratio of the video.
+                                      return AspectRatio(
+                                        aspectRatio: _videoController.value.aspectRatio,
+                                        // Use the VideoPlayer widget to display the video.
+                                        child: VideoPlayer(_videoController),
+                                      );
+                                    } else {
+                                      // If the VideoPlayerController is still initializing, show a
+                                      // loading spinner.
+                                      return const Center(
+                                        child: CircularProgressIndicator(),
+                                      );
+                                    }
+                                  },
+                                ),
+                                Container(
+                                  margin:EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 10),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
                                   ),
-                                  SizedBox(width: 10,),
-                                  Container(
-                                    child: Row(
-                                      children: [
+
+                                ),
+                                Container(
+                                  margin:EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 10),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Expanded(
+                                          child: Container(
+                                            child: Text("${_title}", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),),
+                                          )
+                                      ),
+                                      SizedBox(width: 10,),
+                                      Container(
+                                        child: Row(
+                                          children: [
                                             InkWell(
                                               onTap: (){
                                                 if(_isLogin){
@@ -361,7 +388,7 @@ class _PlayerState extends State<Player> {
                                                 }else{
                                                   _videoController.pause();
                                                   Navigator.push(context, MaterialPageRoute(builder: (context)=>Auth()))
-                                                  .then((value) {
+                                                      .then((value) {
                                                     Navigator.push(context, MaterialPageRoute(builder: (context)=>super.widget));
                                                   });
                                                 }
@@ -375,96 +402,75 @@ class _PlayerState extends State<Player> {
                                               ),
                                             ),
 
-                                       SizedBox(width: 10,),
-                                       InkWell(
-                                         onTap: (){
-                                           _videoController.pause();
-                                           if(!downloading){
-                                             if(_showInterDownload==true && _isInterstitialAdReady==true){
-                                               setState(() {
-                                                 _downloadAds=true;
-                                               });
-                                               _interstitialAd?.show();
-                                             }else{
-                                               downloadFile();
-                                             }
-                                           }
-                                         },
-                                         child: !downloading
-                                             ?
-                                          Icon(Icons.download, color: Colors.white,)
-                                             :
-                                           Container(
-                                               child: Row(
-                                                 children: [
-                                                   Icon(Icons.downloading, color: Colors.white,),
-                                                   Text("${progressString}", style: TextStyle(color: Colors.white),)
-                                                 ],
-                                               )
-                                           )
-                                         ,
-                                       )
-                                      ],
-                                    ),
+                                            SizedBox(width: 10,),
+                                            InkWell(
+                                              onTap: (){
+                                                _videoController.pause();
+                                                if(!downloading){
+                                                  if(_showInterDownload==true && _isInterstitialAdReady==true){
+                                                    setState(() {
+                                                      _downloadAds=true;
+                                                    });
+                                                    _interstitialAd?.show();
+                                                  }else{
+                                                    downloadFile();
+                                                  }
+                                                }
+                                              },
+                                              child: !downloading
+                                                  ?
+                                              Icon(Icons.download, color: Colors.white,)
+                                                  :
+                                              Container(
+                                                  child: Row(
+                                                    children: [
+                                                      Icon(Icons.downloading, color: Colors.white,),
+                                                      Text("${progressString}", style: TextStyle(color: Colors.white),)
+                                                    ],
+                                                  )
+                                              )
+                                              ,
+                                            )
+                                          ],
+                                        ),
+                                      ),
+
+                                    ],
                                   ),
-
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
-                      ),
-                    ),
-                    SizedBox(height: 20,),
-                   Container(
-                     padding: EdgeInsets.only(left: 5, right: 5),
-                     child:  Column(
-                       crossAxisAlignment: CrossAxisAlignment.start,
-                       children: [
-                         Container(
-                           child: Row(
-                             children: [
-                               Icon(Icons.playlist_add_check_outlined),
-                               Text("Suggested Video Clips", style: TextStyle(fontWeight: FontWeight.bold),),
-                             ],
-                           ),
-                         ),
-                         SizedBox(height: 5,),
-                         Suggested(data: widget.data)
-                       ],
-                     )
-                   )
-                  ],
+                        SizedBox(height: 20,),
+                        Container(
+                            padding: EdgeInsets.only(left: 5, right: 5),
+                            child:  Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.playlist_add_check_outlined),
+                                      Text("Suggested Video Clips", style: TextStyle(fontWeight: FontWeight.bold),),
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(height: 5,),
+                                Suggested(data: widget.data)
+                              ],
+                            )
+                        )
+                      ],
 
-                  )
-              )
-            ],
-          ),
-        ) ,
-        bottomNavigationBar: BottomNavigationBar(
-            onTap: onTabTapped, // new
-            currentIndex: _currentIndex,
-          items: [
-            BottomNavigationBarItem(
-              icon: new Icon(Icons.home),
-              title: new Text('S V C'),
-            ),
-            BottomNavigationBarItem(
-              icon: new Icon(Icons.movie_filter),
-              title: new Text('Videos'),
-            ),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.favorite),
-                title: Text('Favorites')
-            ),
+                    )
+                ),
 
-          ],
-          selectedItemColor: Colors.white,
-          unselectedItemColor: Colors.white70,
-          backgroundColor: Color(0x204665).withOpacity(1.0),
+              ],
+            ),
+          ) ,
         ),
-      ),
-
+      )
     );
   }
 }
@@ -505,7 +511,7 @@ class _SuggestedState extends State<Suggested> {
   Widget build(BuildContext context) {
     return  Container(
           child: StreamBuilder<QuerySnapshot>(
-            stream: firestore.collection("Videos").where("genre", isEqualTo: widget.data['genre']).snapshots(),
+            stream: firestore.collection("Videos").where("genre", isGreaterThanOrEqualTo: widget.data['genre']).snapshots(),
             builder: (context, s){
               if(s.hasData){
                 var v=s.data!.docs;
@@ -530,7 +536,11 @@ class _SuggestedState extends State<Suggested> {
                                     child: Card(
                                       child: InkWell(
                                         onTap: (){
-                                          Navigator.push(context, MaterialPageRoute(builder: (context)=>Player(data: v[i])));
+                                          Navigator.push(context, MaterialPageRoute(builder: (context)=>Player(data: v[i]))).then((value){
+                                            setState(() {
+
+                                            });
+                                          });
                                         },
                                         child: Container(
                                             decoration: BoxDecoration(
