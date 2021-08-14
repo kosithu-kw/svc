@@ -6,7 +6,9 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:svc/player.dart';
 
 import 'ad_helper.dart';
+import 'confirm_exit.dart';
 import 'drawer.dart';
+import 'home.dart';
 
 class Videos extends StatefulWidget {
   const Videos({Key? key}) : super(key: key);
@@ -94,19 +96,23 @@ class _VideosState extends State<Videos> {
           title: Text(_title, style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),),
         ),
         drawer: SDrawer(),
-        body: SafeArea(
+        body: WillPopScope(
+          onWillPop: ()async{
+          return await Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(builder: (context)=> Home()));
+          },
+        child :SafeArea(
           child: Stack(
             children: [
               Center(
                 child: Container(
-                  decoration: _isBannerAdReady ? BoxDecoration(
+                  decoration: BoxDecoration(
                       border: Border(
                           top: BorderSide(
-                              width: 55,
+                              width: 50,
                               color: Colors.white
                           )
                       )
-                  ) : null,
+                  ),
                   padding: EdgeInsets.all(5),
                   child: StreamBuilder<QuerySnapshot>(
                     stream: firestore.collection("Videos").orderBy("created_at", descending: true).snapshots(),
@@ -223,6 +229,7 @@ class _VideosState extends State<Videos> {
           ),
         )
       ),
+      )
     );
   }
 }

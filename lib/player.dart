@@ -50,7 +50,6 @@ class _PlayerState extends State<Player> {
     _createChewieController();
 
     setState(() {});
-
     _videoController.addListener(() {
       setState(() {
         if(_videoController.value.isPlaying==true && _videoController.value.isInitialized==true){
@@ -60,8 +59,8 @@ class _PlayerState extends State<Player> {
           });
         }
       });
-      if (_videoController.value.position ==
-          _videoController.value.duration) {
+      if (_videoController.value.position == _videoController.value.duration) {
+        //finish playihg
       }
     });
   }
@@ -276,6 +275,7 @@ class _PlayerState extends State<Player> {
   void dispose() {
     _videoController.dispose();
     _chewieController!.dispose();
+    _interstitialAd?.dispose();
     super.dispose();
   }
 
@@ -287,126 +287,130 @@ class _PlayerState extends State<Player> {
       ),
       title: _genre,
 
-      home: Scaffold(
-        key: _scaffoldKey,
-        appBar: AppBar(
-          leading: IconButton(
-            onPressed: (){
-              Navigator.pop(context);
-            },
-            icon: Icon(Icons.arrow_back),
-          ),
-          title: Text(_genre, style: TextStyle(color: Colors.white),),
-          backgroundColor:  Color(0x204665).withOpacity(1.0),
-        ),
-        floatingActionButton: FloatingActionButton(
-          backgroundColor: Color(0x204665).withOpacity(1.0),
-          onPressed: (){
-              if(_isInterstitialAdReady==true && _showInterNav==true){
-                setState(() {
-                  _goHomeAds=true;
-                });
-                _videoController.pause();
-                _videoController.dispose();
-                _chewieController?.dispose();
-                _interstitialAd?.show();
-
-              }else{
-                _videoController.pause();
-                _videoController.dispose();
-                _chewieController?.dispose();
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>Home()));
-              }
-
-          },
-          child:Icon(Icons.home)
-        ),
-        body: Column(
-          children: <Widget>[
-            Expanded(
-              flex: 5,
-              child: Container(
-                  color: Colors.black,
-                  child: Column(
-                    children: [
-                      Expanded(
-                        flex: 9,
-                          child: Center(
-                              child: _isPlaying
-                                  ? AspectRatio(
-                                aspectRatio: _videoController.value.aspectRatio,
-                                child: Chewie(
-                                  controller: _chewieController!,
-                                ),
-                              )
-                                  : AspectRatio(
-                                aspectRatio: _videoController.value.aspectRatio,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children:  [
-                                    CircularProgressIndicator(
-                                      color: Colors.white,
-                                      backgroundColor: Colors.amber,
-                                    ),
-                                    SizedBox(height: 20),
-                                    Text('Loading', style: TextStyle(color: Colors.white),),
-                                  ],
-                                ),
-                              )
-                          )
-                      ),
-                      SizedBox(height: 10,),
-                      Expanded(
-                        flex: 1,
-                          child: Container(
-                            padding: EdgeInsets.only(top: 5),
-                            child: Text(_title, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
-                          )
-                      )
-                    ],
-                  )
-              ),
+      home: WillPopScope(
+        onWillPop: ()async{
+          return await Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(builder: (context)=> Home()));
+        },
+        child: Scaffold(
+          key: _scaffoldKey,
+          appBar: AppBar(
+            leading: IconButton(
+              onPressed: (){
+                Navigator.pop(context);
+              },
+              icon: Icon(Icons.arrow_back),
             ),
-            SizedBox(height: 10,),
-            Expanded(
-              flex: 1,
-                     child: Card(
-                     child: Container(
-                       padding: EdgeInsets.only(left: 20, right: 20),
+            title: Text(_genre, style: TextStyle(color: Colors.white),),
+            backgroundColor:  Color(0x204665).withOpacity(1.0),
+          ),
+          floatingActionButton: FloatingActionButton(
+              backgroundColor: Color(0x204665).withOpacity(1.0),
+              onPressed: (){
+                if(_isInterstitialAdReady==true && _showInterNav==true){
+                  setState(() {
+                    _goHomeAds=true;
+                  });
+                  _videoController.pause();
+                  _videoController.dispose();
+                  _chewieController?.dispose();
+                  _interstitialAd?.show();
+
+                }else{
+                  _videoController.pause();
+                  _videoController.dispose();
+                  _chewieController?.dispose();
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=>Home()));
+                }
+
+              },
+              child:Icon(Icons.home)
+          ),
+          body: Column(
+            children: <Widget>[
+              Expanded(
+                flex: 5,
+                child: Container(
+                    color: Colors.black,
+                    child: Column(
+                      children: [
+                        Expanded(
+                            flex: 9,
+                            child: Center(
+                                child: _isPlaying
+                                    ? AspectRatio(
+                                  aspectRatio: _videoController.value.aspectRatio,
+                                  child: Chewie(
+                                    controller: _chewieController!,
+                                  ),
+                                )
+                                    : AspectRatio(
+                                  aspectRatio: _videoController.value.aspectRatio,
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children:  [
+                                      CircularProgressIndicator(
+                                        color: Colors.white,
+                                        backgroundColor: Colors.amber,
+                                      ),
+                                      SizedBox(height: 20),
+                                      Text('Loading', style: TextStyle(color: Colors.white),),
+                                    ],
+                                  ),
+                                )
+                            )
+                        ),
+                        SizedBox(height: 10,),
+                        Expanded(
+                            flex: 1,
+                            child: Container(
+                              padding: EdgeInsets.only(top: 5),
+                              child: Text(_title, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
+                            )
+                        )
+                      ],
+                    )
+                ),
+              ),
+              SizedBox(height: 10,),
+              Expanded(
+                  flex: 1,
+                  child: Card(
+                      child: Container(
+                        padding: EdgeInsets.only(left: 20, right: 20),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
 
 
                             InkWell(
-                              onTap: (){
-                                if(!downloading){
-                                  _videoController.pause();
-                                  if(_isInterstitialAdReady==true && _showInterDownload==true){
+                                onTap: (){
+                                  if(!downloading){
+                                    _videoController.pause();
+                                    if(_isInterstitialAdReady==true && _showInterDownload==true){
                                       setState(() {
                                         _downloadAds=true;
                                       });
                                       _interstitialAd?.show();
-                                  }else{
-                                    checkPermission();
+                                    }else{
+                                      checkPermission();
+                                    }
                                   }
-                                }
-                              },
-                              child: Container(
-                                padding: EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 10),
-                                  child: !downloading
-                                      ?
-                                  Icon(Icons.download, color: Colors.black,)
-                                      :
-                                  Container(
-                                      child: Row(
-                                        children: [
-                                          Icon(Icons.downloading, color: Colors.black,),
-                                          Text("${progressString}", style: TextStyle(color: Colors.black),)
-                                        ],
-                                      )
-                                  )
-                              )
+                                },
+                                child: Container(
+                                    padding: EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 10),
+                                    child: !downloading
+                                        ?
+                                    Icon(Icons.download, color: Colors.black,)
+                                        :
+                                    Container(
+                                        child: Row(
+                                          children: [
+                                            Icon(Icons.downloading, color: Colors.black,),
+                                            Text("${progressString}", style: TextStyle(color: Colors.black),)
+                                          ],
+                                        )
+                                    )
+                                )
 
                             ),
                             IconButton(
@@ -431,96 +435,96 @@ class _PlayerState extends State<Player> {
                           ],
                         ),
                       )
-                      )
+                  )
 
-            ),
-            Expanded(
-              flex: 4,
-            child :Container(
-              height: 220,
-                margin: EdgeInsets.only(bottom: 10),
-                child: Container(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        padding: EdgeInsets.only(top: 10, left: 10,bottom: 10),
-                        child: Text("Suggested video clips", style: TextStyle(fontWeight: FontWeight.bold),),
-                      ),
-                      Container(
-                        child: StreamBuilder<QuerySnapshot>(
-                          stream: firestore.collection("Videos").where("genre", isEqualTo: _genre).snapshots(),
-                          builder: (context, s){
-                            if(s.hasData){
-                              var v=s.data!.docs;
-                              return Container(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Container(
-                                      height: 160,
-                                      child: ListView.builder(
-                                          scrollDirection: Axis.horizontal,
+              ),
+              Expanded(
+                  flex: 4,
+                  child :Container(
+                      height: 220,
+                      margin: EdgeInsets.only(bottom: 10),
+                      child: Container(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              padding: EdgeInsets.only(top: 10, left: 10,bottom: 10),
+                              child: Text("Suggested video clips", style: TextStyle(fontWeight: FontWeight.bold),),
+                            ),
+                            Container(
+                              child: StreamBuilder<QuerySnapshot>(
+                                stream: firestore.collection("Videos").where("genre", isEqualTo: _genre).snapshots(),
+                                builder: (context, s){
+                                  if(s.hasData){
+                                    var v=s.data!.docs;
+                                    return Container(
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Container(
+                                            height: 160,
+                                            child: ListView.builder(
+                                                scrollDirection: Axis.horizontal,
 
-                                          itemCount: v.length,
-                                          itemBuilder: (_,i){
+                                                itemCount: v.length,
+                                                itemBuilder: (_,i){
 
-                                            bool _isFavorite=v[i]['favorites'].contains("");
-                                            return Row(
-                                              children: [
-                                                Container(
-                                                  decoration: BoxDecoration(
-                                                    borderRadius: BorderRadius.circular(20),
-                                                  ),
-                                                  width: 160,
-                                                  child: Card(
-                                                    child: InkWell(
-                                                      onTap: (){
-                                                          if(_isPlaying){
+                                                  bool _isFavorite=v[i]['favorites'].contains("");
+                                                  return Row(
+                                                    children: [
+                                                      Container(
+                                                        decoration: BoxDecoration(
+                                                          borderRadius: BorderRadius.circular(20),
+                                                        ),
+                                                        width: 160,
+                                                        child: Card(
+                                                          child: InkWell(
+                                                            onTap: (){
+                                                              if(_isPlaying){
 
-                                                            if(_changeCount >=2){
-                                                              _changeCount=0;
-                                                            }else{
-                                                              _changeCount++;
-                                                            }
+                                                                if(_changeCount >=2){
+                                                                  _changeCount=0;
+                                                                }else{
+                                                                  _changeCount++;
+                                                                }
 
-                                                            if(_isInterstitialAdReady==true && _showInterChangeVideo==true && _changeCount==2){
-                                                              _videoController.pause();
-                                                              setState(() {
-                                                                _changeVideoAds=true;
-                                                              });
-                                                              _interstitialAd?.show();
+                                                                if(_isInterstitialAdReady==true && _showInterChangeVideo==true && _changeCount==2){
+                                                                  _videoController.pause();
+                                                                  setState(() {
+                                                                    _changeVideoAds=true;
+                                                                  });
+                                                                  _interstitialAd?.show();
 
-                                                            }else{
-                                                              _changeVideo(v[i]);
-
-                                                            }
-
-                                                          }
-                                                      },
-                                                      child: Container(
-                                                          decoration: BoxDecoration(
-                                                            color: Colors.black,
-                                                          ),
-                                                          child: Container(
-                                                            child: Stack(
-                                                              children: [
-                                                                Container(
-                                                                  child: CachedNetworkImage(
-                                                                    imageUrl: "${v[i]['poster_url']}",
-                                                                    progressIndicatorBuilder: (context, url, downloadProgress) =>
-                                                                        Center(
-                                                                          child: CircularProgressIndicator(
-                                                                            value: downloadProgress.progress,
-                                                                            color: Colors.amber[500],
-                                                                            backgroundColor: Colors.amber[900],
-                                                                          ),
-                                                                        ),
-                                                                    errorWidget: (context, url, error) => Icon(Icons.error),
-                                                                  ),
+                                                                }else{
+                                                                  _changeVideo(v[i]);
+                                                                }
+                                                              }else{
+                                                                _finishSnackBar("Please wait while current video is on loading.", false);
+                                                              }
+                                                            },
+                                                            child: Container(
+                                                                decoration: BoxDecoration(
+                                                                  color: Colors.black,
                                                                 ),
-                                                                /*
+                                                                child: Container(
+                                                                  child: Stack(
+                                                                    children: [
+                                                                      Container(
+                                                                        child: CachedNetworkImage(
+                                                                          imageUrl: "${v[i]['poster_url']}",
+                                                                          progressIndicatorBuilder: (context, url, downloadProgress) =>
+                                                                              Center(
+                                                                                child: CircularProgressIndicator(
+                                                                                  value: downloadProgress.progress,
+                                                                                  color: Colors.amber[500],
+                                                                                  backgroundColor: Colors.amber[900],
+                                                                                ),
+                                                                              ),
+                                                                          errorWidget: (context, url, error) => Icon(Icons.error),
+                                                                        ),
+                                                                      ),
+                                                                      /*
                                                                 Align(
                                                                   alignment: Alignment.topRight,
                                                                   child: Container(
@@ -542,57 +546,58 @@ class _PlayerState extends State<Player> {
 
                                                                  */
 
-                                                                Align(
-                                                                    alignment: Alignment.bottomCenter,
-                                                                    child:
-                                                                    Container(
-                                                                      width: MediaQuery.of(context).size.width,
-                                                                      padding: EdgeInsets.all(5),
-                                                                      decoration: BoxDecoration(
-                                                                          color: Colors.black.withOpacity(0.8),
-                                                                          borderRadius: BorderRadius.circular(5)
+                                                                      Align(
+                                                                          alignment: Alignment.bottomCenter,
+                                                                          child:
+                                                                          Container(
+                                                                            width: MediaQuery.of(context).size.width,
+                                                                            padding: EdgeInsets.all(5),
+                                                                            decoration: BoxDecoration(
+                                                                                color: Colors.black.withOpacity(0.8),
+                                                                                borderRadius: BorderRadius.circular(5)
 
-                                                                      ),
-                                                                      child: Text(v[i]['title'], style: TextStyle(height: 1.5, color: Colors.white)),
-                                                                    )
+                                                                            ),
+                                                                            child: Text(v[i]['title'], style: TextStyle(height: 1.5, color: Colors.white)),
+                                                                          )
+                                                                      )
+                                                                    ],
+                                                                  ),
                                                                 )
-                                                              ],
                                                             ),
-                                                          )
+                                                          ),
+                                                        ),
                                                       ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            );
-                                          }
+                                                    ],
+                                                  );
+                                                }
+                                            ),
+                                          )
+                                        ],
                                       ),
-                                    )
-                                  ],
-                                ),
-                              );
-                            }else{
-                              return Center(
-                                child: CircularProgressIndicator(
-                                  color: Colors.amber[500],
-                                  backgroundColor: Colors.amber[900],
-                                ),
-                              );
-                            }
-                          },
+                                    );
+                                  }else{
+                                    return Center(
+                                      child: CircularProgressIndicator(
+                                        color: Colors.amber[500],
+                                        backgroundColor: Colors.amber[900],
+                                      ),
+                                    );
+                                  }
+                                },
+                              ),
+                            )
+                          ],
                         ),
                       )
-                    ],
-                  ),
-                )
+                  )
               )
-            )
 
 
 
-          ],
+            ],
+          ),
         ),
-      ),
+      )
     );
   }
 }

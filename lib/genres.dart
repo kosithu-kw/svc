@@ -8,6 +8,7 @@ import 'package:svc/player.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 import 'ad_helper.dart';
+import 'confirm_exit.dart';
 
 class Genres extends StatefulWidget {
   const Genres({Key? key}) : super(key: key);
@@ -122,19 +123,26 @@ class _GDataState extends State<GData> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
+    return WillPopScope(
+        onWillPop: ()async{
+      return await Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(builder: (context)=> AppExit()));
+    },
+     child: SafeArea(
         child: Stack(
           children: [
+
             Center(
               child: Container(
-                decoration: _isBannerAdReady ? BoxDecoration(
+                decoration: BoxDecoration(
                   border: Border(
                     top: BorderSide(
-                      width: 55,
+                      width: 50,
                       color: Colors.white
                     )
                   )
-                ) : null,
+                ),
+                
+
                 child: StreamBuilder<QuerySnapshot>(
                   stream: firestore.collection("Genre").orderBy('created_at', descending: true).snapshots(),
                   builder: (context, s){
@@ -309,6 +317,7 @@ class _GDataState extends State<GData> {
               ),
           ],
         )
+     )
     );
   }
 }

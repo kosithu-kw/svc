@@ -46,12 +46,7 @@ class _HomeState extends State<Home> {
     return MaterialApp(
       title: _title,
       home: Scaffold(
-        body: WillPopScope(
-          onWillPop: ()async{
-           return await Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(builder: (context)=> AppExit()));
-          },
-          child: _children[_currentIndex],
-        ),
+        body:_children[_currentIndex],
         bottomNavigationBar: BottomNavigationBar(
           onTap: onTabTapped, // new
           currentIndex: _currentIndex,  // this will be set when a new tab is tapped
