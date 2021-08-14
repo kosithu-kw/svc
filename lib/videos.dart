@@ -42,7 +42,7 @@ class _VideosState extends State<Videos> {
 
   @override
   void initState() {
-    _checkLogin();
+   // _checkLogin();
     // TODO: implement initState
     _checkShowAds();
     //_callBanner();
@@ -155,6 +155,7 @@ class _VideosState extends State<Videos> {
                                               errorWidget: (context, url, error) => Icon(Icons.error),
                                             ),
                                           ),
+                                          /*
                                           Align(
                                             alignment: Alignment.topRight,
                                             child: Container(
@@ -173,6 +174,8 @@ class _VideosState extends State<Videos> {
                                                 )
                                             ),
                                           ),
+
+                                           */
 
                                           Align(
                                               alignment: Alignment.bottomCenter,

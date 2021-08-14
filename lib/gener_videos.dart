@@ -144,6 +144,7 @@ class _GenerVideosState extends State<GenerVideos> {
                                             errorWidget: (context, url, error) => Icon(Icons.error),
                                           ),
                                         ),
+                                        /*
                                         Align(
                                           alignment: Alignment.topRight,
                                           child: Container(
@@ -161,6 +162,8 @@ class _GenerVideosState extends State<GenerVideos> {
                                               )
                                           ),
                                         ),
+
+                                         */
 
                                         Align(
                                             alignment: Alignment.bottomCenter,

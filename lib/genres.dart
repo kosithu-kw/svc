@@ -60,6 +60,7 @@ class GData extends StatefulWidget {
 class _GDataState extends State<GData> {
   FirebaseFirestore firestore=FirebaseFirestore.instance;
 
+
   _checkLogin()async{
     var currentUser=await FirebaseAuth.instance.currentUser;
     if(currentUser.uid !=null){
@@ -83,7 +84,7 @@ class _GDataState extends State<GData> {
 
   @override
   void initState() {
-    _checkLogin();
+    //_checkLogin();
     _checkShowAds();
     //_callBanner();
   }
@@ -216,6 +217,7 @@ class _GDataState extends State<GData> {
                                                                                     errorWidget: (context, url, error) => Icon(Icons.error),
                                                                                   ),
                                                                                 ),
+                                                                                /*
                                                                                 Align(
                                                                                   alignment: Alignment.topRight,
                                                                                   child: Container(
@@ -234,6 +236,8 @@ class _GDataState extends State<GData> {
                                                                                       )
                                                                                   ),
                                                                                 ),
+
+                                                                                 */
 
                                                                                 Align(
                                                                                     alignment: Alignment.bottomCenter,

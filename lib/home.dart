@@ -29,7 +29,7 @@ class _HomeState extends State<Home> {
   final List<Widget> _children = [
     Genres(),
     Videos(),
-    Favorite(),
+    //Favorite(),
   ];
 
   @override
@@ -64,10 +64,13 @@ class _HomeState extends State<Home> {
               icon: new Icon(Icons.movie_filter),
               title: new Text('Videos'),
             ),
+            /*
             BottomNavigationBarItem(
                 icon: Icon(Icons.favorite),
                 title: Text('Favorites')
             ),
+
+             */
 
           ],
           selectedItemColor: Colors.white,

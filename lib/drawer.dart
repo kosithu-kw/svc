@@ -56,12 +56,12 @@ class _SDrawerState extends State<SDrawer> {
         child: ListView(
             children: [
               UserAccountsDrawerHeader(
-                  accountName: Text(_name),
-                  accountEmail: Text(_email),
+                  accountName: Text("S V C"),
+                  accountEmail: Text("Short Video Clips"),
                 currentAccountPicture: CircleAvatar(
                   radius: 30,
                   child: ClipOval(
-                    child: _isLogin ? Image.network(_picture) : Image.asset("images/profile.jpg"),
+                    child: _isLogin ? Image.network(_picture) : Image.asset("images/icon.png"),
                   ),
                 )
               ),
@@ -83,6 +83,7 @@ class _SDrawerState extends State<SDrawer> {
                   trailing: Icon(Icons.movie_filter_sharp),
                 ),
               ),
+              /*
               Card(
                 child: ListTile(
                   onTap: (){
@@ -92,6 +93,9 @@ class _SDrawerState extends State<SDrawer> {
                   trailing: Icon(Icons.favorite),
                 ),
               ),
+
+               */
+             /*
              if(!_isLogin) Card(
                child: ListTile(
                  onTap: (){
@@ -106,6 +110,9 @@ class _SDrawerState extends State<SDrawer> {
 
                ),
              ),
+
+              */
+
               if(_isLogin) Card(
                 child: ListTile(
                   onTap: (){
@@ -120,6 +127,7 @@ class _SDrawerState extends State<SDrawer> {
 
                 ),
               ),
+
               if(_isLogin) Card(
                 child: ListTile(
                   onTap: (){
