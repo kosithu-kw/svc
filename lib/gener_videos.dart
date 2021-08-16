@@ -6,8 +6,7 @@ import 'package:svc/player.dart';
 
 import 'ad_helper.dart';
 import 'confirm_exit.dart';
-import 'drawer.dart';
-import 'home.dart';
+
 
 class GenerVideos extends StatefulWidget {
   final data;
@@ -71,7 +70,12 @@ class _GenerVideosState extends State<GenerVideos> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return
+      WillPopScope(
+        onWillPop: ()async{
+          return await Navigator.of(context).push(MaterialPageRoute(builder: (context)=> AppExit()));
+        },
+        child: MaterialApp(
       theme: ThemeData(
           primaryColor: Color(0x204665).withOpacity(1.0)
       ),
@@ -86,11 +90,7 @@ class _GenerVideosState extends State<GenerVideos> {
           ),
           title: Text(widget.data['title'], style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),),
         ),
-        body: WillPopScope(
-          onWillPop: ()async{
-          return await Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(builder: (context)=> Home()));
-          },
-        child:SafeArea(
+        body: SafeArea(
           child: Stack(
             children: [
               Container(
@@ -178,7 +178,7 @@ class _GenerVideosState extends State<GenerVideos> {
                                               width: MediaQuery.of(context).size.width,
                                               padding: EdgeInsets.all(5),
                                               decoration: BoxDecoration(
-                                                  color: Colors.black.withOpacity(0.8),
+                                                  color: Colors.black.withOpacity(0.4),
                                                   borderRadius: BorderRadius.circular(5)
 
                                               ),

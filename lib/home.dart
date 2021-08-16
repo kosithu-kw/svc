@@ -7,6 +7,7 @@ import 'package:svc/favorite.dart';
 import 'package:svc/videos.dart';
 
 
+
 class Home extends StatefulWidget {
   final data;
   const Home({Key? key, this.data=0}) : super(key: key);
@@ -76,3 +77,5 @@ class _HomeState extends State<Home> {
     );
   }
 }
+
+

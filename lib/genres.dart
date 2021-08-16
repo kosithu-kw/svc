@@ -125,9 +125,10 @@ class _GDataState extends State<GData> {
   Widget build(BuildContext context) {
     return WillPopScope(
         onWillPop: ()async{
-      return await Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(builder: (context)=> AppExit()));
+      return await Navigator.of(context).push(MaterialPageRoute(builder: (context)=> AppExit()));
     },
-     child: SafeArea(
+     child: Scaffold(
+     body: SafeArea(
         child: Stack(
           children: [
 
@@ -161,7 +162,7 @@ class _GDataState extends State<GData> {
                                       Container(
                                           child: InkWell(
                                             onTap: (){
-                                              Navigator.push(context, MaterialPageRoute(builder: (context)=>GenerVideos(data: g[i])));
+                                              Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(builder: (context)=>GenerVideos(data: g[i])));
                                             },
                                             child: Row(
                                               children: [
@@ -183,7 +184,7 @@ class _GDataState extends State<GData> {
                                                   crossAxisAlignment: CrossAxisAlignment.start,
                                                   children: [
                                                     Container(
-                                                      height: 160,
+                                                      height: 140,
                                                       child: ListView.builder(
                                                           scrollDirection: Axis.horizontal,
 
@@ -254,7 +255,7 @@ class _GDataState extends State<GData> {
                                                                                       width: MediaQuery.of(context).size.width,
                                                                                       padding: EdgeInsets.all(5),
                                                                                       decoration: BoxDecoration(
-                                                                                          color: Colors.black.withOpacity(0.8),
+                                                                                          color: Colors.black.withOpacity(0.4),
                                                                                           borderRadius: BorderRadius.circular(5)
 
                                                                                       ),
@@ -317,6 +318,7 @@ class _GDataState extends State<GData> {
               ),
           ],
         )
+     )
      )
     );
   }
