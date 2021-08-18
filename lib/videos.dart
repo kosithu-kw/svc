@@ -34,12 +34,15 @@ class _VideosState extends State<Videos> {
   bool _isLogin=false;
 
   _checkShowAds(){
-    firestore.collection("Ads").snapshots().forEach((e) {
+    _callBanner();
+    /* firestore.collection("Ads").snapshots().forEach((e) {
       var data=e.docs.first.data();
       if(data['show_banner_videos']){
-        _callBanner();
+
       }
     });
+
+     */
   }
 
   @override

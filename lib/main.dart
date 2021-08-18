@@ -56,7 +56,7 @@ class Splash extends StatelessWidget {
               Center(
                 child: DefaultTextStyle(
                     style: TextStyle(
-                        color: Colors.amber[500],
+                        color: Colors.white,
                         fontSize: 35,
                         fontWeight: FontWeight.bold
                     ),
@@ -74,8 +74,8 @@ class Splash extends StatelessWidget {
                 child: Container(
                   margin: EdgeInsets.only(bottom: 50, left: 150, right: 150),
                   child: LinearProgressIndicator(
-                    color: Colors.amber[500],
-                    backgroundColor: Colors.amber[900],
+                    color: Colors.white,
+                    backgroundColor: Colors.amber,
                   ),
                 ),
               )

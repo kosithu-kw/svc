@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chewie/chewie.dart';
@@ -9,6 +10,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:svc/confirm_exit.dart';
 import 'package:svc/home.dart';
@@ -149,7 +151,12 @@ class _PlayerState extends State<Player> {
       //downloadFile();
       //print(statuses[Permission.storage]); // it should print PermissionStatus.granted
 
-      if(status.isPermanentlyDenied){
+      if(statuses[Permission.storage].isGranted){
+        _finishSnackBar("Your download will start in a moment.", true);
+        downloadFile();
+      }
+
+      if(statuses[Permission.storage].isPermanentlyDenied){
           _showPermissionSnackBar("To continued download allow storage permission ", false);
       }
     }
@@ -163,10 +170,13 @@ class _PlayerState extends State<Player> {
   Future<void> downloadFile() async {
     Dio dio = Dio();
 
+    //Directory? dir = await getApplicationDocumentsDirectory();
+
+//storage/emulated/0/Download/
     try {
-        await dio.download(_videoUrl, "/storage/emulated/0/Download/${_title}.mp4",
+        await dio.download(_videoUrl, "storage/emulated/0/Download/SVC/${_title}.mp4",
             onReceiveProgress: (rec, total) {
-              // print("Rec: $rec , Total: $total");
+               print("Rec: $rec , Total: $total");
 
               setState(() {
                 downloading = true;
@@ -231,7 +241,12 @@ class _PlayerState extends State<Player> {
   }
 
   _checkShowAds(){
-    firestore.collection("Ads").snapshots().forEach((e) {
+
+    setState(() {
+      _showInterDownload=true;
+      _showInterChangeVideo=true;
+    });
+   /* firestore.collection("Ads").snapshots().forEach((e) {
       var data=e.docs.first.data();
       if(data['show_inter_download']){
         setState(() {
@@ -249,6 +264,8 @@ class _PlayerState extends State<Player> {
         });
       }
     });
+
+    */
   }
 
 

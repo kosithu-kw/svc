@@ -21,12 +21,15 @@ class _GenerVideosState extends State<GenerVideos> {
   FirebaseFirestore firestore=FirebaseFirestore.instance;
 
   _checkShowAds(){
-    firestore.collection("Ads").snapshots().forEach((e) {
+    _callBanner();
+    /*firestore.collection("Ads").snapshots().forEach((e) {
       var data=e.docs.first.data();
       if(data['show_banner_genre']){
-        _callBanner();
+
       }
     });
+
+     */
   }
 
   late BannerAd _bannerAd;
@@ -56,13 +59,13 @@ class _GenerVideosState extends State<GenerVideos> {
   @override
   void initState() {
     // TODO: implement initState
-    _checkShowAds();
+    //_checkShowAds();
     super.initState();
   }
 
   @override
   void dispose() {
-    _bannerAd.dispose();
+   // _bannerAd.dispose();
 
     super.dispose();
   }
@@ -94,7 +97,7 @@ class _GenerVideosState extends State<GenerVideos> {
           child: Stack(
             children: [
               Container(
-
+                /*
                 decoration: BoxDecoration(
                     border: Border(
                         top: BorderSide(
@@ -103,6 +106,8 @@ class _GenerVideosState extends State<GenerVideos> {
                         )
                     )
                 ),
+
+                 */
                 padding: EdgeInsets.all(5),
                 child: StreamBuilder<QuerySnapshot>(
                   stream: firestore.collection("Videos").where("genre", isEqualTo: widget.data['title']).snapshots(),

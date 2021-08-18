@@ -75,12 +75,15 @@ class _GDataState extends State<GData> {
   bool _isLogin=false;
 
   _checkShowAds(){
-     firestore.collection("Ads").snapshots().forEach((e) {
+    _callBanner();
+   /*  firestore.collection("Ads").snapshots().forEach((e) {
         var data=e.docs.first.data();
         if(data['show_banner_home']){
-          _callBanner();
+
         }
      });
+
+    */
   }
 
   @override
